@@ -10,6 +10,7 @@ import { FormError } from '../components/DeveloperSignup.component.jsx';
 export default function EnterCode() {
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
+
   const history = useHistory();
 
   const handleVerifyCode = async () => {

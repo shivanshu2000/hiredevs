@@ -4,6 +4,7 @@ import styled from 'styled-components';
 import axios from 'axios';
 import * as Yup from 'yup';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import TextInput, {
   Error,
@@ -17,6 +18,7 @@ export default function Signup({ setShowVerification }) {
   const [error, setError] = useState('');
   const [isFocused, setIsFocused] = useState(false);
   const [validGithubUsername, setValidGithubUsername] = useState(true);
+  const dispatch = useDispatch();
 
   const history = useHistory();
 
@@ -38,6 +40,7 @@ export default function Signup({ setShowVerification }) {
 
   const handleSignup = async (data) => {
     try {
+      dispatch({ type: 'USER_SIGNUP_REQUEST' });
       setValidGithubUsername(true);
       const res = await axios.get(
         `https://api.github.com/users/${data.githubUsername}`
@@ -51,9 +54,18 @@ export default function Signup({ setShowVerification }) {
 
       console.log(resA.data);
       if (resA.data.success) {
+        dispatch({
+          type: 'USER_SIGNUP_SUCCESS',
+        });
+
+        dispatch({ type: 'SET_USER_TOKEN', payload: resA.data.token });
+        JSON.stringify(localStorage.setItem('token', resA.data.token));
         setShowVerification(true);
       }
     } catch (e) {
+      dispatch({
+        type: 'USER_SIGNUP_FAIL',
+      });
       if (e.response && e.response.data.message === 'Not Found') {
         setValidGithubUsername(false);
         console.log(e.response.data);

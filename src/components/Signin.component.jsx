@@ -8,11 +8,12 @@ import TextInput from './CustomInput.component';
 import { Title } from '../pages/Home';
 import { useHistory } from 'react-router-dom';
 import { FormError } from './DeveloperSignup.component';
+import { useDispatch } from 'react-redux';
 
 export default function Signup() {
   const history = useHistory();
-
   const [error, setError] = useState('');
+  const dispatch = useDispatch();
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().required('Please enter email'),
@@ -21,6 +22,9 @@ export default function Signup() {
 
   const handleLogin = async ({ email, password }) => {
     try {
+      dispatch({
+        type: 'USER_LOGIN_SUCCESS',
+      });
       const res = await axios.post('http://localhost:8080/api/auth/login', {
         email: email,
         password: password,
@@ -29,6 +33,10 @@ export default function Signup() {
       console.log(res.data);
       if (res.data.success) {
         console.log('here');
+        dispatch({ type: 'USER_LOGIN_SUCCESS', payload: res.data.token });
+        dispatch({ type: 'SET_USER_TOKEN', payload: res.data.token });
+        localStorage.setItem('token', res.data.token);
+
         return history.push('/dashboard');
       }
     } catch (e) {
