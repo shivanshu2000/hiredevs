@@ -1,16 +1,45 @@
 import { Form, Formik } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
+import axios from 'axios';
 import styled from 'styled-components';
 
 import TextInput from './CustomInput.component';
 import { Title } from '../pages/Home';
+import { useHistory } from 'react-router-dom';
+import { FormError } from './DeveloperSignup.component';
 
 export default function Signup() {
+  const history = useHistory();
+
+  const [error, setError] = useState('');
+
   const validationSchema = Yup.object().shape({
     email: Yup.string().required('Please enter email'),
     password: Yup.string().required('Please enter a password'),
   });
+
+  const handleLogin = async ({ email, password }) => {
+    try {
+      const res = await axios.post('http://localhost:8080/api/auth/login', {
+        email: email,
+        password: password,
+      });
+
+      console.log(res.data);
+      if (res.data.success) {
+        console.log('here');
+        return history.push('/dashboard');
+      }
+    } catch (e) {
+      console.log(e.response);
+      if (e.response) {
+        setError(e.response.data.error);
+      } else {
+        setError('Something went wrong');
+      }
+    }
+  };
   return (
     <div id="signup">
       <Title style={{ textAlign: 'center' }}>Signin</Title>
@@ -18,17 +47,28 @@ export default function Signup() {
         validationSchema={validationSchema}
         initialValues={{ email: '', password: '' }}
         onSubmit={async (data, { setSubmitting, resetForm }) => {
-          resetForm();
+          await handleLogin(data);
+          // resetForm();
           console.log(data);
         }}
       >
         {({ isSubmitting, dirty, isValid }) => (
           <Form>
+            {!!error && (
+              <FormError>
+                {error}
+                <div onClick={() => setError('')} style={{ cursor: 'pointer' }}>
+                  X
+                </div>
+              </FormError>
+            )}
             <TextInput
               label="Email:"
               name="email"
               placeholder="Enter your email"
             />
+
+            <div style={{ marginTop: '1.9rem' }} />
 
             <TextInput
               label="Password:"
@@ -36,7 +76,9 @@ export default function Signup() {
               type="password"
               placeholder="Enter your password"
             />
-            <Button type="submit">Sign in</Button>
+            <Button disabled={!dirty || !isValid} type="submit">
+              Sign in
+            </Button>
           </Form>
         )}
       </Formik>
@@ -44,7 +86,7 @@ export default function Signup() {
   );
 }
 
-const Button = styled.button`
+export const Button = styled.button`
   color: white;
   text-transform: uppercase;
   border-radius: 25px;

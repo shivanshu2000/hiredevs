@@ -45,7 +45,7 @@ const TextField = styled.input`
   outline: none;
   width: 100%;
   border-radius: 7px;
-  padding: 0.5rem 1.5rem;
+  padding: 0.5rem 1.1rem;
   transition: all 0.3s ease-in-out;
 
   &:focus {

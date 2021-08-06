@@ -5,6 +5,8 @@ import Home from './pages/Home';
 import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 import User from './pages/User';
+import Dashboard from './pages/Dashboard';
+
 import Nav from './components/Nav.component.jsx';
 
 function App() {
@@ -15,6 +17,7 @@ function App() {
         <Route path="/" exact component={Home} />
         <Route path="/profile" component={Profile} />
         <Route path="/signup" component={Signup} />
+        <Route path="/dashboard" component={Dashboard} />
         <Route path="/user/:userId" component={User} />
       </Switch>
     </div>
