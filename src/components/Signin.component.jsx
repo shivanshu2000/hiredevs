@@ -33,8 +33,9 @@ export default function Signup() {
       console.log(res.data);
       if (res.data.success) {
         console.log('here');
-        dispatch({ type: 'USER_LOGIN_SUCCESS', payload: res.data.token });
+        dispatch({ type: 'USER_LOGIN_SUCCESS' });
         dispatch({ type: 'SET_USER_TOKEN', payload: res.data.token });
+        dispatch({ type: 'USER_DETAILS_SUCCESS', payload: res.data.user });
         localStorage.setItem('token', res.data.token);
 
         return history.push('/dashboard');
@@ -50,7 +51,7 @@ export default function Signup() {
   };
   return (
     <div id="signup">
-      <Title style={{ textAlign: 'center' }}>Signin</Title>
+      <Title style={{ textAlign: 'center', marginTop: '9px' }}>Signin</Title>
       <Formik
         validationSchema={validationSchema}
         initialValues={{ email: '', password: '' }}

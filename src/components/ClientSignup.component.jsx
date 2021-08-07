@@ -27,7 +27,7 @@ export default function Signup({ setShowVerification }) {
       dispatch({ type: 'USER_SIGNUP_REQUEST' });
       const res = await axios.post('http://localhost:8080/api/auth/signup', {
         ...data,
-        type: 'client',
+        userType: 'client',
       });
 
       if (res.data.success) {

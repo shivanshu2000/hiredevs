@@ -50,6 +50,7 @@ export default function Signup({ setShowVerification }) {
         ...data,
         avatar: res.data.avatar_url,
         githubUsername: data.githubUsername,
+        userType: 'developer',
       });
 
       console.log(resA.data);
@@ -58,8 +59,6 @@ export default function Signup({ setShowVerification }) {
           type: 'USER_SIGNUP_SUCCESS',
         });
 
-        dispatch({ type: 'SET_USER_TOKEN', payload: resA.data.token });
-        JSON.stringify(localStorage.setItem('token', resA.data.token));
         setShowVerification(true);
       }
     } catch (e) {
@@ -254,5 +253,9 @@ export const FormError = styled.div`
   border: 1px solid red;
   border-radius: 9px;
   background-color: rgba(255, 0, 0, 0.5);
-  padding: 1rem 0.5rem;
+  padding: 0.3rem 0.5rem;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
 `;

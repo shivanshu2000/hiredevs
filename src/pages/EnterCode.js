@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import styled from 'styled-components';
 import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
 import { Button } from '../components/Signin.component';
 import { TechnologiesInput } from '../components/DeveloperSignup.component.jsx';
@@ -12,6 +13,7 @@ export default function EnterCode() {
   const [error, setError] = useState('');
 
   const history = useHistory();
+  const dispatch = useDispatch();
 
   const handleVerifyCode = async () => {
     if (code.trim().length === 0) {
@@ -27,6 +29,10 @@ export default function EnterCode() {
       console.log(res.data.success);
       if (res.data.success) {
         console.log(res.data.success);
+
+        dispatch({ type: 'SET_USER_TOKEN', payload: res.data.token });
+        dispatch({ type: 'USER_DETAILS_SUCCESS', payload: res.data.user });
+        JSON.stringify(localStorage.setItem('token', res.data.token));
         history.push('/dashboard');
       }
     } catch (e) {

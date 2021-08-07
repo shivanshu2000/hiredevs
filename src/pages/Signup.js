@@ -5,9 +5,15 @@ import DeveloperSignup from '../components/DeveloperSignup.component.jsx';
 import ClientSignup from '../components/ClientSignup.component.jsx';
 import EnterCode from './EnterCode';
 
+import { useSelector } from 'react-redux';
+import { Redirect } from 'react-router-dom';
+
 export default function Signup() {
   const [isDeveloper, setIsDeveloper] = useState(true);
   const [showVerification, setShowVerification] = useState(false);
+  const { user } = useSelector((state) => state.userDetails);
+
+  if (!!user) return <Redirect to="/dashboard" />;
 
   if (showVerification) {
     return <EnterCode />;

@@ -1,10 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import styled from 'styled-components';
+import { useSelector } from 'react-redux';
+import { Redirect } from 'react-router-dom';
 
 import Signin from '../components/Signin.component.jsx';
 
 export default function Home() {
+  const { user } = useSelector((state) => state.userDetails);
+  if (!!user) return <Redirect to="/dashboard" />;
   return (
     <HomeContainer>
       <Hero>

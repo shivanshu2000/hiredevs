@@ -1,5 +1,6 @@
 import './App.css';
 import { Route, Switch } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 
 import Home from './pages/Home';
 import Profile from './pages/Profile';
@@ -10,6 +11,11 @@ import Dashboard from './pages/Dashboard';
 import Nav from './components/Nav.component.jsx';
 
 function App() {
+  const { initialized } = useSelector((state) => state.async);
+
+  if (!initialized) {
+    return <div>Loading...</div>;
+  }
   return (
     <div className="App">
       <Nav />
