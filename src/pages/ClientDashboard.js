@@ -22,15 +22,15 @@ export default function Dashboard() {
       <DashboardContainer>
         <DashboardCard>
           <Title>Total requested</Title>
-          <Amount>20</Amount>
+          <Amount>{user.total}</Amount>
         </DashboardCard>
         <DashboardCard>
           <Title>Completed</Title>
-          <Amount>19</Amount>
+          <Amount>{user.completed}</Amount>
         </DashboardCard>
         <DashboardCard>
           <Title>Remaining</Title>
-          <Amount>1</Amount>
+          <Amount>{user.total * 1 - user.completed * 1}</Amount>
         </DashboardCard>
       </DashboardContainer>
       <ProjectsContainer>

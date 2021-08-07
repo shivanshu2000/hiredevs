@@ -29,6 +29,8 @@ export const userTokenReducer = (state = { token: null }, action) => {
   switch (action.type) {
     case 'SET_USER_TOKEN':
       return { loading: false, token: action.payload };
+    case 'RESET_TOKEN':
+      return {};
     default:
       return state;
   }

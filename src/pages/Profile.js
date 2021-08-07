@@ -1,62 +1,237 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { Redirect } from 'react-router-dom';
+import { Redirect, useParams, useHistory } from 'react-router-dom';
+import { Form, Formik } from 'formik';
+import axios from 'axios';
+import * as Yup from 'yup';
 
 import { Pill } from '../components/DeveloperSignup.component.jsx';
 import { Divider } from './DeveloperDashboard.js';
+import Backdrop from '../components/Backdrop.component.jsx';
+import Modal from '../components/Modal.component.jsx';
+import TextInput from '../components/CustomInput.component';
 
 export default function Profile() {
   const { user } = useSelector((state) => state.userDetails);
+  const { token } = useSelector((state) => state.userToken);
 
-  if (!user || user.userType === 'client') {
+  const [render, setRender] = useState(false);
+  const [userData, setUserData] = useState(null);
+  const [show, setShow] = useState(false);
+  const [posts, setPosts] = useState([]);
+  const [fetchedPosts, setFetchedPosts] = useState(false);
+
+  const isUsername = useParams().username;
+  const username = isUsername ? isUsername : user?.username;
+
+  useEffect(() => {
+    axios.get(`http://localhost:8080/api/users/${username}`).then((res) => {
+      if (res.data.success) {
+        setUserData(res.data.userData);
+
+        setRender(true);
+      }
+    });
+  }, [username]);
+
+  useEffect(() => {
+    setFetchedPosts(false);
+    axios
+      .get(`http://localhost:8080/api/posts/${username}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      .then((res) => {
+        if (res.data.success) {
+          setPosts(res.data.posts);
+          setFetchedPosts(true);
+          console.log(res.data.posts);
+        }
+      })
+      .catch((err) => {
+        console.log(err.message);
+        setFetchedPosts(true);
+      });
+
+    return function () {
+      setFetchedPosts(false);
+    };
+  }, [token, username]);
+
+  const handlePost = async (data) => {
+    try {
+      axios
+        .post(
+          'http://localhost:8080/api/posts',
+          {
+            ...data,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res.data.success) {
+            console.log(res.data.post);
+            setPosts((prevState) => setPosts([...prevState, res.data.post]));
+            setShow(false);
+          }
+        });
+    } catch (err) {
+      console.log(err);
+      console.log(err.response.data.error);
+    }
+  };
+
+  if (!render) return <div>Loading...</div>;
+
+  if (!user) {
     return <Redirect to="/dashboard" />;
   }
+  const validationSchema = Yup.object().shape({
+    title: Yup.string().required('Please enter title'),
+    description: Yup.string().required('Please enter a description'),
+  });
 
   return (
     <Container>
+      {show && <Backdrop setShow={setShow} />}
+      {show && (
+        <Modal open={show}>
+          <Formik
+            validationSchema={validationSchema}
+            initialValues={{
+              title: '',
+              description: '',
+              webUrl: '',
+              repoLink: '',
+            }}
+            onSubmit={async (data, { setSubmitting, resetForm }) => {
+              try {
+                await handlePost(data);
+                resetForm();
+              } catch (e) {
+                console.log(e);
+              }
+            }}
+          >
+            {({ isSubmitting, dirty, isValid }) => (
+              <Form>
+                <TextInput
+                  label="Title:"
+                  name="title"
+                  placeholder="Enter project title"
+                />
+
+                <TextInput
+                  label="Description:"
+                  name="description"
+                  placeholder="Enter project description"
+                />
+
+                <TextInput
+                  label="Website url (optional):"
+                  name="webUrl"
+                  type="text"
+                  placeholder="Enter an username"
+                />
+                <TextInput
+                  label="Github repo link (optional):"
+                  name="repoLink"
+                  type="text"
+                  placeholder="Enter your github's username"
+                />
+
+                <Button
+                  style={{
+                    margin: '0 auto',
+                    borderRadius: '25px',
+                    padding: '9px 15px',
+                  }}
+                  disabled={!dirty || !isValid}
+                  type="submit"
+                >
+                  Add post
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        </Modal>
+      )}
       <TopContainer>
         <AvatarContainer>
-          <Avatar image={user.avatar} />
-          <div>{user.username}</div>
+          <Avatar image={userData.avatar} />
+          <div>{userData.username}</div>
         </AvatarContainer>
         <RightContainer>
           <RightContainerCard>
             <Title>Total </Title>
-            <Amount>42</Amount>
+            <Amount>{userData.total}</Amount>
           </RightContainerCard>
           <RightContainerCard>
             <Title>Completed</Title>
-            <Amount>19</Amount>
+            <Amount>{userData.completed}</Amount>
           </RightContainerCard>
         </RightContainer>
       </TopContainer>
-      <PostsContainer>
-        <Post>
-          <div>hello</div>
-          <div>Project1</div>
-        </Post>
-        <Post>
-          <div>hello</div>
-          <div>Project1</div>
-        </Post>
-        <Post>
-          <div>hello</div>
-          <div>Project1</div>
-        </Post>
-        <Post>
-          <div>hello</div>
-          <div>Project1</div>
-        </Post>
-        <Post>
-          <div>hello</div>
-          <div>Project1</div>
-        </Post>
-        <Post>
-          <div>hello</div>
-          <div>Project1</div>
-        </Post>
-      </PostsContainer>
+      <PostsWrapper>
+        <div
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+
+            padding: '5px 0',
+          }}
+        >
+          <div
+            style={{
+              textAlign: 'center',
+              flex: 1,
+              color: '#12609e',
+              fontWeight: 600,
+              letterSpacing: '1px',
+            }}
+          >
+            {username}'s posts
+          </div>
+          {!isUsername && (
+            <div>
+              <Button onClick={() => setShow(true)}>Create post</Button>
+            </div>
+          )}
+        </div>
+        <br />
+        <hr />
+
+        {fetchedPosts && posts.length === 0 && (
+          <div style={{ textAlign: 'center', padding: '1rem' }}>
+            No post available to see
+          </div>
+        )}
+        {posts.length > 0 && (
+          <PostsContainer className="posts__container">
+            {fetchedPosts ? (
+              <>
+                {posts.map((post) => (
+                  <Post key={post._id}>
+                    <PostTitle>{post.title}</PostTitle>
+                    <Description>{post.description}</Description>
+                  </Post>
+                ))}
+              </>
+            ) : (
+              <div>Loading...</div>
+            )}
+          </PostsContainer>
+        )}
+      </PostsWrapper>
       <TechnologiesContainer>
         <div
           style={{
@@ -66,18 +241,30 @@ export default function Profile() {
             textTransform: 'uppercase',
           }}
         >
-          Technologies {user.username} know
+          Technologies {userData.username} know
         </div>
         <Divider />
         <Technologies>
-          {user.technologies.map((t, i) => (
-            <Pill className="user__pill">{t}</Pill>
+          {userData.technologies.map((t, i) => (
+            <Pill style={{ marginTop: '15px' }} key={i} className="user__pill">
+              {t}
+            </Pill>
           ))}
         </Technologies>
       </TechnologiesContainer>
     </Container>
   );
 }
+
+const Description = styled.div`
+  color: #808080;
+  font-size: 14px;
+`;
+const PostTitle = styled.div`
+  color: #12609e;
+  font-size: 1rem;
+  margin-bottom: 5px;
+`;
 
 const Container = styled.div`
   margin-top: 2.5rem;
@@ -86,7 +273,7 @@ const Container = styled.div`
 const Technologies = styled.div`
   margin: 0 auto;
   max-width: 600px;
-  display: flex;
+  text-align: center;
   justify-content: center;
   & > div.user__pill {
     text-align: center;
@@ -109,19 +296,55 @@ const TechnologiesContainer = styled.div`
   border: 1px solid #ccc;
 `;
 const PostsContainer = styled.div`
-  margin-top: 2.5rem;
   display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
   grid-gap: 1rem;
-  padding: 1rem;
-  border: 1px solid #ccc;
-  border-radius: 13px;
-  overflow-x: scroll;
+  margin-top: 1rem;
+  padding: 0 5px 0 0;
+  height: 250px;
 
-  ::-webkit-scrollbar {
-    height: 5px;
+  overflow-y: scroll;
+
+  &.posts__container::-webkit-scrollbar {
+    height: 6px;
     width: 2px;
   }
+  &.posts__container::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px grey;
+    border-radius: 10px;
+  }
+  &.posts__container::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+  }
+`;
+
+const PostsWrapper = styled.div`
+  display: flex;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  flex-direction: column;
+  margin-top: 2.5rem;
+  border-radius: 13px;
+`;
+
+const Post = styled.div`
+  border: 1px solid #ccc;
+  border-radius: 5px;
+
+  padding: 0.5rem;
+  min-height: 150px;
+`;
+const Button = styled.button`
+  border: none;
+  margin-left: auto;
+  display: block;
+  background-color: #12609e;
+  color: white;
+  cursor: pointer;
+  border-radius: 9px;
+  font-weight: normal;
+  padding: 9px;
 `;
 
 const Avatar = styled.div`
@@ -142,13 +365,6 @@ const Avatar = styled.div`
     width: 50px;
     height: 50px;
   }
-`;
-
-const Post = styled.div`
-  border: 1px solid #ccc;
-  border-radius: 13px;
-  padding: 1rem;
-  /* width: 150px; */
 `;
 
 const RightContainer = styled.div`

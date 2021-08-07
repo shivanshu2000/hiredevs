@@ -7,7 +7,7 @@ import { DashboardContainer, DashboardCard } from './ClientDashboard';
 
 export default function Dashboard() {
   //   const token = useSelector((state) => state.userToken);
-  //   const { user } = useSelector((state) => state.userDetails);
+  const { user } = useSelector((state) => state.userDetails);
 
   //   console.log(token);
   return (
@@ -15,15 +15,15 @@ export default function Dashboard() {
       <DashboardContainer>
         <DashboardCard>
           <Title>Total Projects</Title>
-          <Amount>20</Amount>
+          <Amount>{user.total}</Amount>
         </DashboardCard>
         <DashboardCard>
           <Title>Completed</Title>
-          <Amount>19</Amount>
+          <Amount>{user.completed}</Amount>
         </DashboardCard>
         <DashboardCard>
           <Title>Working on</Title>
-          <Amount>1</Amount>
+          <Amount>{user.total * 1 - user.completed * 1}</Amount>
         </DashboardCard>
       </DashboardContainer>
 

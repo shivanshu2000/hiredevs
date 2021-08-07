@@ -1,13 +1,15 @@
 import { Form, Formik } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 import * as Yup from 'yup';
 import axios from 'axios';
 import { useDispatch } from 'react-redux';
+import { FormError } from './DeveloperSignup.component.jsx';
 
 import TextInput from '../components/CustomInput.component';
 import { Button } from './Signin.component';
 
 export default function Signup({ setShowVerification }) {
+  const [error, setError] = useState('');
   const dispatch = useDispatch();
 
   const validationSchema = Yup.object().shape({
@@ -40,6 +42,7 @@ export default function Signup({ setShowVerification }) {
         setShowVerification(true);
       }
     } catch (e) {
+      setError(e.response.data.error);
       dispatch({
         type: 'USER_SIGNUP_FAIL',
         payload: e.response.data.error,
@@ -59,12 +62,22 @@ export default function Signup({ setShowVerification }) {
       }}
       onSubmit={async (data, { setSubmitting, resetForm }) => {
         await handleSignup(data);
-        resetForm();
+        // resetForm();
         console.log(data);
       }}
     >
       {({ isSubmitting, dirty, isValid }) => (
         <Form>
+          {!!error && (
+            <FormError
+              style={{ background: 'red', top: '85%', height: '50px', left: 0 }}
+            >
+              {error}
+              <div onClick={() => setError('')} style={{ cursor: 'pointer' }}>
+                X
+              </div>
+            </FormError>
+          )}
           <TextInput
             label="Company Name:"
             name="username"

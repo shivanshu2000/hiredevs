@@ -11,6 +11,7 @@ export default function Nav() {
   const handleLogout = () => {
     localStorage.removeItem('token');
     dispatch({ type: 'USER_DETAILS_RESET' });
+    dispatch({ type: 'RESET_TOKEN' });
   };
 
   return (
@@ -75,7 +76,7 @@ const NavbarContainer = styled.div`
   z-index: 99;
 `;
 
-const Links = styled(NavLink)`
+export const Links = styled(NavLink)`
   text-decoration: none;
   font-weight: bold;
   color: white;

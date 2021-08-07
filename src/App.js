@@ -7,6 +7,7 @@ import Profile from './pages/Profile';
 import Signup from './pages/Signup';
 import User from './pages/User';
 import Dashboard from './pages/Dashboard';
+import Explore from './pages/Explore';
 
 import Nav from './components/Nav.component.jsx';
 
@@ -24,7 +25,8 @@ function App() {
         <Route path="/profile" component={Profile} />
         <Route path="/signup" component={Signup} />
         <Route path="/dashboard" component={Dashboard} />
-        <Route path="/user/:userId" component={User} />
+        <Route path="/explore" component={Explore} />
+        <Route path="/user/:username" component={Profile} />
       </Switch>
     </div>
   );

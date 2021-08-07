@@ -62,6 +62,8 @@ export default function Signup({ setShowVerification }) {
         setShowVerification(true);
       }
     } catch (e) {
+      console.log(e.response.data.error);
+      setError(e.response.data.error);
       dispatch({
         type: 'USER_SIGNUP_FAIL',
       });
@@ -113,7 +115,9 @@ export default function Signup({ setShowVerification }) {
       {({ isSubmitting, dirty, isValid }) => (
         <Form>
           {!validGithubUsername && (
-            <FormError>
+            <FormError
+              style={{ background: 'red', top: '90%', height: '50px', left: 0 }}
+            >
               Please enter a correct github username{' '}
               <div
                 onClick={() => setValidGithubUsername(true)}
@@ -123,6 +127,18 @@ export default function Signup({ setShowVerification }) {
               </div>
             </FormError>
           )}
+
+          {!!error && (
+            <FormError
+              style={{ background: 'red', top: '90%', height: '50px', left: 0 }}
+            >
+              {error}
+              <div onClick={() => setError('')} style={{ cursor: 'pointer' }}>
+                X
+              </div>
+            </FormError>
+          )}
+
           <TextInput
             label="Email:"
             name="email"
@@ -165,7 +181,6 @@ export default function Signup({ setShowVerification }) {
               value={technology}
               placeholder="Press enter to add"
             />
-            {!!error && <Error>{error}</Error>}
           </InputContainer>
           <PillsContainer>
             {technologies.map((p, i) => (
