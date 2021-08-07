@@ -191,7 +191,7 @@ const PillsContainer = styled.div`
   margin: auto;
 `;
 
-const Pill = styled.div`
+export const Pill = styled.div`
   display: inline-block;
   border-radius: 7px;
   padding: 7px;

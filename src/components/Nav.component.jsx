@@ -50,9 +50,11 @@ export default function Nav() {
             </Links>
           </div>
           <RightItems>
-            <Links to="/profile">
-              <Avatar image={user.avatar} />
-            </Links>
+            {user.userType === 'developer' && (
+              <Links to="/profile">
+                <Avatar height={30} width={30} image={user.avatar} />
+              </Links>
+            )}
 
             <LogoutButton onClick={handleLogout}>Logout</LogoutButton>
           </RightItems>
@@ -87,13 +89,15 @@ const Navbar = styled.div`
   align-items: center;
 `;
 
-const Avatar = styled.div`
+export const Avatar = styled.div`
   background-image: url(${(props) => props.image});
-  width: 30px;
-  height: 30px;
+  width: ${(props) => props.width}px;
+  height: ${(props) => props.height}px;
   margin-right: 7px;
   border-radius: 50%;
-  background-size: contain;
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
 `;
 
 const LogoutButton = styled.button`
