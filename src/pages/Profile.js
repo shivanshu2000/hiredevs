@@ -37,8 +37,8 @@ export default function Profile() {
   const personalProfile = history.location.pathname.includes('/profile');
 
   useEffect(() => {
-    if (!username) return;
-    console.log(username, !username);
+    if (!username || !token) return;
+
     axios
       .get(
         `${api}/api/users/count/${username}`,
@@ -74,7 +74,7 @@ export default function Profile() {
   }, [username]);
 
   useEffect(() => {
-    if (!username) return;
+    if (!username || !token) return;
     setFetchedPosts(false);
     axios
       .get(`${api}/api/posts/${username}`, {
@@ -90,7 +90,6 @@ export default function Profile() {
         }
       })
       .catch((err) => {
-        console.log(err.message);
         setFetchedPosts(true);
       });
 
@@ -384,6 +383,8 @@ export default function Profile() {
         <br />
         <hr />
 
+        {!fetchedPosts && <Loader />}
+
         {fetchedPosts && posts.length === 0 && (
           <div style={{ textAlign: 'center', padding: '1rem' }}>
             No post available to see
@@ -391,7 +392,7 @@ export default function Profile() {
         )}
         {posts.length > 0 && (
           <PostsContainer className="posts__container">
-            {fetchedPosts ? (
+            {fetchedPosts && (
               <>
                 {posts.map((post, i) => (
                   <Post key={post._id}>
@@ -432,8 +433,6 @@ export default function Profile() {
                   </Post>
                 ))}
               </>
-            ) : (
-              <Loader />
             )}
           </PostsContainer>
         )}
@@ -490,6 +489,11 @@ const HireDeveloperContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  border: 1px solid rgba(209, 213, 219, 0.3);
 `;
 
 const Description = styled.div`
@@ -503,7 +507,7 @@ const Description = styled.div`
     width: 2px;
   }
   &.description::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px white;
+    box-shadow: inset 0 0 5px #f2f2f2;
     border-radius: 10px;
   }
   &.description::-webkit-scrollbar-thumb {
@@ -530,6 +534,7 @@ const PostTitle = styled.div`
 const Container = styled.div`
   margin-top: 2rem;
   padding: 1rem;
+  background-color: #ccc;
 `;
 
 const TopContainer = styled.div`
@@ -571,6 +576,11 @@ const TechnologiesContainer = styled.div`
   padding: 1rem 0;
   border-radius: 13px;
   border: 1px solid #ccc;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  border: 1px solid rgba(209, 213, 219, 0.3);
 `;
 const PostsContainer = styled.div`
   display: grid;
@@ -587,7 +597,7 @@ const PostsContainer = styled.div`
     width: 2px;
   }
   &.posts__container::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px white;
+    box-shadow: inset 0 0 5px #f2f2f2;
     border-radius: 10px;
   }
   &.posts__container::-webkit-scrollbar-thumb {
@@ -610,6 +620,11 @@ const PostsWrapper = styled.div`
   border: 1px solid #ccc;
   flex-direction: column;
   margin-top: 2.5rem;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  border: 1px solid rgba(209, 213, 219, 0.3);
   border-radius: 13px;
 `;
 
@@ -682,7 +697,11 @@ const RightContainerCard = styled.div`
   justify-content: flex-start;
   margin: 0 1.5rem;
   align-items: center;
-
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
+  border: 1px solid rgba(209, 213, 219, 0.3);
   padding: 0 1rem;
   border-radius: 13px;
   min-width: 150px;

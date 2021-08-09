@@ -15,6 +15,7 @@ export default function Signup() {
   const history = useHistory();
   const [error, setError] = useState('');
   const dispatch = useDispatch();
+  const [signing, setSigning] = useState(false);
 
   const validationSchema = Yup.object().shape({
     email: Yup.string().required('Please enter email'),
@@ -22,16 +23,15 @@ export default function Signup() {
   });
 
   const handleLogin = async ({ email, password }) => {
+    setSigning(true);
     try {
       const res = await axios.post(`${api}/api/auth/login`, {
         email: email,
         password: password,
       });
 
-      console.log(res.data);
       if (res.data.success) {
-        console.log('here');
-        dispatch({ type: 'USER_LOGIN_SUCCESS' });
+        setSigning(false);
         dispatch({ type: 'SET_USER_TOKEN', payload: res.data.token });
         dispatch({ type: 'USER_DETAILS_SUCCESS', payload: res.data.user });
         localStorage.setItem('token', res.data.token);
@@ -39,11 +39,12 @@ export default function Signup() {
         return history.push('/dashboard');
       }
     } catch (e) {
-      console.log(e.response);
       if (e.response) {
+        setSigning(false);
         setError(e.response.data.error);
       } else {
         setError('Something went wrong');
+        setSigning(false);
       }
     }
   };
@@ -56,7 +57,6 @@ export default function Signup() {
         onSubmit={async (data, { setSubmitting, resetForm }) => {
           await handleLogin(data);
           // resetForm();
-          console.log(data);
         }}
       >
         {({ isSubmitting, dirty, isValid }) => (
@@ -81,11 +81,16 @@ export default function Signup() {
               label="Password:"
               name="password"
               type="password"
+              autoComplete="off"
               placeholder="Enter your password"
             />
-            <Button disabled={!dirty || !isValid} type="submit">
-              Sign in
-            </Button>
+            {signing ? (
+              <Button>Signing in...</Button>
+            ) : (
+              <Button disabled={!dirty || !isValid} type="submit">
+                Sign in
+              </Button>
+            )}
           </Form>
         )}
       </Formik>

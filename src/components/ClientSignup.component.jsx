@@ -104,6 +104,7 @@ export default function Signup({ setShowOnSubmit, showOnSubmit }) {
           <TextInput
             label="Password:"
             name="password"
+            autoComplete="off"
             type="password"
             placeholder="Enter your password"
           />
@@ -111,6 +112,7 @@ export default function Signup({ setShowOnSubmit, showOnSubmit }) {
           <TextInput
             label="Confirm Password:"
             name="confirmPassword"
+            autoComplete="off"
             type="password"
             placeholder="Enter your password"
           />

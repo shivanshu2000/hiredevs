@@ -1,6 +1,7 @@
 .App {
   padding-top: 3.5rem;
   min-height: 100vh;
+  background-color: #ccc;
 }
 
 .disable {

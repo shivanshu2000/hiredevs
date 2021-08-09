@@ -60,10 +60,6 @@ export default function Explore() {
       });
   }, [history, user, username, tag]);
 
-  const getUser = () => {
-    console.log(username);
-  };
-
   if (!user) {
     return <Redirect to="/dashboard" />;
   }
@@ -83,7 +79,6 @@ export default function Explore() {
           <Button
             disabled={username.trim().length === 0}
             className={username.trim().length === 0 && 'disable'}
-            onClick={getUser}
           >
             Search
           </Button>
@@ -94,7 +89,7 @@ export default function Explore() {
           {usersFetching ? (
             <Loader />
           ) : (
-            <>
+            <Users className="users">
               {users?.length === 0 && (
                 <ModalDescription>No user found</ModalDescription>
               )}
@@ -109,12 +104,14 @@ export default function Explore() {
                   <div>
                     {' '}
                     {user.technologies.slice(0, 3).map((t, i) => (
-                      <UserPill key={i}>{t}</UserPill>
+                      <UserPill style={{ marginTop: '5px' }} key={i}>
+                        {t}
+                      </UserPill>
                     ))}
                   </div>
                 </SingleUser>
               ))}
-            </>
+            </Users>
           )}
         </UsersContainer>
         <TagsContainer>
@@ -141,6 +138,9 @@ export default function Explore() {
 
 const SearchContainer = styled.div`
   border: 1px solid #ccc;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
 
   padding: 0.5rem;
 `;
@@ -150,6 +150,14 @@ const Wrapper = styled.div`
   grid-template-columns: 3fr 1fr;
   grid-gap: 1rem 1rem;
   padding: 0.5rem;
+
+  @media only screen and (max-width: 600px) {
+    display: flex;
+    flex-direction: column-reverse;
+    justify-content: flex-start;
+    align-items: center;
+    flex: 1;
+  }
 `;
 const SearchBox = styled.div`
   max-width: 350px;
@@ -170,6 +178,10 @@ const TagsContainer = styled.div`
   border: 1px solid #ccc;
   margin-top: 1.5rem;
   padding: 1rem 0.5rem;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 13px;
 `;
 
 const Input = styled.input`
@@ -220,6 +232,42 @@ const Button = styled.button`
 const UsersContainer = styled.div`
   margin-top: 2.5rem;
   padding: 0.5rem;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 7px;
+
+  @media only screen and (max-width: 600px) {
+    width: 100%;
+    height: 350px;
+    margin-top: 0;
+    /* flex: 1; */
+  }
+`;
+
+const Users = styled.div`
+  overflow-y: scroll;
+  padding-right: 5px;
+  height: 100%;
+
+  &.users::-webkit-scrollbar {
+    height: 6px;
+    width: 2px;
+  }
+  &.users::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px #f2f2f2;
+    border-radius: 10px;
+  }
+  &.users::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+  }
+  @media only screen and (max-width: 600px) {
+    width: 100%;
+
+    margin-top: 0;
+    /* flex: 1; */
+  }
 `;
 
 const Tag = styled.div`

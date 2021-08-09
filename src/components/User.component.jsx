@@ -11,9 +11,7 @@ export default function User({ username: name, image }) {
 
   const history = useHistory();
   const navigateToUser = () => {
-    console.log(username);
     if (user.username === username) {
-      console.log('true');
       return history.push('/profile');
     }
 

@@ -158,8 +158,9 @@ export default function Dashboard() {
 
       <ProjectsContainer>
         <ProjectCard>
-          <Heading color="blue">Pending projects</Heading>
-          <Divider style={{ marginBottom: '0px' }} />
+          <HeadingContainer color="#12609e">
+            <Heading color="white">Pending projects</Heading>
+          </HeadingContainer>
           <ProjectContainer style={{ padding: '0.3rem' }}>
             {details.pendingProjects.length === 0 && (
               <ModalDescription>No pending projects yet</ModalDescription>
@@ -200,8 +201,9 @@ export default function Dashboard() {
           </ProjectContainer>
         </ProjectCard>
         <ProjectCard>
-          <Heading color="green">Completed projects</Heading>
-          <Divider style={{ marginBottom: '0px' }} />
+          <HeadingContainer color="#4CBB17">
+            <Heading color="white">Completed projects</Heading>
+          </HeadingContainer>
           <ProjectContainer style={{ padding: '0.3rem' }}>
             {details.completedProjects.length === 0 && (
               <ModalDescription>No completed projects yet</ModalDescription>
@@ -224,18 +226,9 @@ export default function Dashboard() {
         </ProjectCard>
       </ProjectsContainer>
       <RequestsContainer>
-        <div
-          style={{
-            textAlign: 'center',
-            fontSize: '1.1rem',
-            textTransform: 'uppercase',
-            fontWeight: 'bold',
-            color: '#12609e',
-          }}
-        >
-          All Requests
-        </div>
-        <Divider />
+        <HeadingContainer color="#F09537">
+          <Heading>All Requests</Heading>
+        </HeadingContainer>
         {details.pendingRequests.length === 0 && (
           <ModalDescription>No pending requests</ModalDescription>
         )}
@@ -276,6 +269,15 @@ export const Divider = styled.div`
   background-color: #ccc;
 `;
 
+export const HeadingContainer = styled.div`
+  background-color: ${(props) => props.color};
+  padding: 0.7rem 0.3rem;
+  color: white;
+  border-radius: 13px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  margin-bottom: 1rem;
+`;
 export const Heading = styled.div`
   font-size: 1.2rem;
   margin-top: 5px;
@@ -300,8 +302,11 @@ export const ProjectsContainer = styled.div`
 
 export const ProjectCard = styled.div`
   border: 1px solid #ccc;
-  height: 300px;
+  height: 320px;
   /* overflow-x: scroll; */
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
   border-radius: 13px;
 `;
 const RequestsContainer = styled.div`
@@ -310,7 +315,10 @@ const RequestsContainer = styled.div`
   flex-direction: column;
   border-radius: 13px;
   border: 1px solid #ccc;
-  padding: 2.1rem 0;
+  padding: 0 0 2.1rem 0;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
 `;
 const Request = styled.div`
   display: flex;

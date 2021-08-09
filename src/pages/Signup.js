@@ -62,6 +62,8 @@ export default function Signup() {
 const Container = styled.div`
   width: 100%;
   padding: 1.5rem 1rem 1.5rem 1rem;
+  background: #ccc;
+  min-height: 100vh;
 `;
 
 const FormContainer = styled.div`
@@ -71,7 +73,6 @@ const FormContainer = styled.div`
   -webkit-backdrop-filter: blur(16px) saturate(180%);
   background-color: rgba(255, 255, 255, 0.75);
   border-radius: 12px;
-  border: 1px solid rgba(209, 213, 219, 0.3);
   overflow: hidden;
   padding-bottom: 2.5rem;
 `;

@@ -8,8 +8,8 @@ import {
   ProjectsContainer,
   ProjectCard,
   Heading,
-  Divider,
   ModalDescription,
+  HeadingContainer,
 } from './DeveloperDashboard';
 
 import { api } from '../constants';
@@ -78,8 +78,6 @@ export default function Dashboard() {
   if (!user) return <Redirect to="/" />;
   if (!details) return <Loader />;
 
-  console.log(details);
-
   return (
     <>
       <DashboardContainer>
@@ -98,8 +96,9 @@ export default function Dashboard() {
       </DashboardContainer>
       <ProjectsContainer>
         <ProjectCard>
-          <Heading color="green">Completed projects</Heading>
-          <Divider style={{ marginBottom: '0px' }} />
+          <HeadingContainer color="#4CBB17">
+            <Heading color="white">Completed projects</Heading>
+          </HeadingContainer>
           <ProjectContainer style={{ padding: '0.3rem' }}>
             {details.completedProjects.length === 0 && (
               <ModalDescription>No completed projects yet</ModalDescription>
@@ -119,8 +118,9 @@ export default function Dashboard() {
           </ProjectContainer>
         </ProjectCard>
         <ProjectCard>
-          <Heading color="blue">Pending projects</Heading>
-          <Divider style={{ marginBottom: '0px' }} />
+          <HeadingContainer color="#12609e">
+            <Heading color="white">Pending projects</Heading>
+          </HeadingContainer>
           <ProjectContainer style={{ padding: '0.3rem' }}>
             {details.pendingProjects.length === 0 && (
               <ModalDescription>No pending projects</ModalDescription>
@@ -141,17 +141,9 @@ export default function Dashboard() {
         </ProjectCard>
       </ProjectsContainer>
       <RequestedProjectsContainer>
-        <Title
-          style={{
-            margin: '1rem 0 0 0',
-            borderBottom: '1px solid #ccc',
-            fontSize: '1.1rem',
-            textAlign: 'center',
-            paddingBottom: '1rem',
-          }}
-        >
-          Pending Requests
-        </Title>
+        <HeadingContainer color="#F09537">
+          <Heading>Pending Requests</Heading>
+        </HeadingContainer>
 
         <Container className="pending__container">
           {details.pendingRequests.length === 0 && (
@@ -195,19 +187,9 @@ export default function Dashboard() {
         </Container>
       </RequestedProjectsContainer>
       <RequestedProjectsContainer>
-        <Title
-          style={{
-            margin: '1rem 0 0 0',
-            borderBottom: '1px solid #ccc',
-            fontSize: '1.1rem',
-            textAlign: 'center',
-            paddingBottom: '1rem',
-            textTransform: 'inherit',
-          }}
-        >
-          Your completed projects. Do accept the request to help developer build
-          strong profile.
-        </Title>
+        <HeadingContainer color="#4CBB17">
+          <Heading>Approval Requests</Heading>
+        </HeadingContainer>
 
         <Container className="pending__container">
           {details.requestedByDeveloper?.length === 0 && (
@@ -318,6 +300,10 @@ export const DashboardCard = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
 `;
 
 const RequestedProjectsContainer = styled.div`
@@ -328,6 +314,10 @@ const RequestedProjectsContainer = styled.div`
   padding: 0rem 0rem 2.5rem 0rem;
   margin-top: 2.5rem;
   border-radius: 17px;
+  backdrop-filter: blur(16px) saturate(180%);
+  -webkit-backdrop-filter: blur(16px) saturate(180%);
+  background-color: rgba(255, 255, 255, 0.75);
+  border-radius: 12px;
 `;
 const Container = styled.div`
   max-height: 350px;

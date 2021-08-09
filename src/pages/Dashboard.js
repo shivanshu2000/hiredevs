@@ -12,7 +12,13 @@ export default function Dashboard() {
   if (!user) return <Redirect to="/" />;
 
   return (
-    <div style={{ marginTop: '2.5rem', padding: '0 1rem 2.5rem 1rem' }}>
+    <div
+      style={{
+        marginTop: '2.5rem',
+        backgroundColor: '#ccc',
+        padding: '0 1rem 2.5rem 1rem',
+      }}
+    >
       <Links
         style={{
           background: '#12609e',

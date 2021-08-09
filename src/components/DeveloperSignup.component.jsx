@@ -157,12 +157,14 @@ export default function Signup({ setShowOnSubmit, showOnSubmit }) {
             label="Password:"
             name="password"
             type="password"
+            autoComplete="off"
             placeholder="Enter your password"
           />
           <TextInput
             label="Confirm Password:"
             name="confirmPassword"
             type="password"
+            autoComplete="off"
             placeholder="Enter your password"
           />
           <TextInput
