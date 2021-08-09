@@ -30,36 +30,17 @@ Api is created with Node.js and Express.js [Api repo](https://github.com/shivans
 
 ## Screenshots
 
-<table>
-  <tr>
-    <td>Developer Signup</td>
-     <td>Client Signup</td>
-     <td>Present day in purple and selected day in pink</td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/developerSignup.png" width=310 height=480></td>
-    <td><img src="screenshots/clientSignup.png" width=310 height=480></td>
-  </tr>
- </table>
+<div align = "center">
+  <img src="screenshots/developerSignup.png" width="45%" height="100%">
+  <img src="screenshots/clientSignup.png" width="45%" height="100%">
+</div>
 
- <table>
-  <tr>
-     <td>Developer Dashboard</td>
-    <td>Client Profile</td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/developerDashboard.png" width=310 height=480></td>
-    <td><img src="screenshots/clientDashboard.png" width=310 height=480></td>
-  </tr>
- </table>
+<div align = "center">
+    <img src="screenshots/developerDashboard.png" width="45%" height="100%">
+    <img src="screenshots/clientDashboard.png" width="45%" height="100%">
+ </div>
 
- <table>
-  <tr>
-    <td>Developer Profile</td>
-     <td>Community Page</td>
-  </tr>
-  <tr>
-    <td><img src="screenshots/developerProfile.png" width=310 height=480></td>
-    <td><img src="screenshots/communityPage.png" width=310 height=480></td>
-  </tr>
- </table>
+<div align = "center">
+    <img src="screenshots/developerProfile.png" width="45%" height="100%">
+    <img src="screenshots/communityPage.png" width="45%" height="100%">
+</div>
