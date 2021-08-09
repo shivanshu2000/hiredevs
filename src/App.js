@@ -14,6 +14,7 @@ import Explore from './pages/Explore';
 import Nav from './components/Nav.component.jsx';
 import Loader from './components/Loader.component';
 import NotFoundPage from './pages/NotFoundPage';
+import ErrorBoundary from './components/ErrorBoundary.component';
 
 function App() {
   const { initialized } = useSelector((state) => state.async);
@@ -22,19 +23,21 @@ function App() {
     return <Loader />;
   }
   return (
-    <div className="App">
-      <ToastContainer position="top-right" hideProgressBar />
-      <Nav />
-      <Switch>
-        <Route path="/" exact component={Home} />
-        <Route path="/profile" component={Profile} />
-        <Route path="/signup" component={Signup} />
-        <Route path="/dashboard" component={Dashboard} />
-        <Route path="/explore" component={Explore} />
-        <Route path="/user/:username" component={Profile} />
-        <Route path="*" exact={true} component={NotFoundPage} />
-      </Switch>
-    </div>
+    <ErrorBoundary>
+      <div className="App">
+        <ToastContainer position="top-right" hideProgressBar />
+        <Nav />
+        <Switch>
+          <Route path="/" exact component={Home} />
+          <Route path="/profile" component={Profile} />
+          <Route path="/signup" component={Signup} />
+          <Route path="/dashboard" component={Dashboard} />
+          <Route path="/explore" component={Explore} />
+          <Route path="/user/:username" component={Profile} />
+          <Route path="*" exact={true} component={NotFoundPage} />
+        </Switch>
+      </div>
+    </ErrorBoundary>
   );
 }
 

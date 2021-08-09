@@ -54,9 +54,12 @@ export default function Profile() {
         }
       })
       .catch((err) => {
-        console.log('error');
+        if (err.response?.data.error === 'User not found') {
+          console.log(err.response.data.error);
+          history.push('/not-found');
+        }
       });
-  }, [username, token]);
+  }, [username, history, token]);
 
   useEffect(() => {
     axios.get(`${api}/api/users/${username}`).then((res) => {
