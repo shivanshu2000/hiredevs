@@ -26,21 +26,41 @@ Developer
 
 ## API
 
-Api is created with Node.js and Express.js [Api repo](https://github.com/shivanshu2000/hiredevs-api)
+Api is created with Node.js and Express.js [Repo Link](https://github.com/shivanshu2000/hiredevs-api)
 
 ## Screenshots
 
-<div align = "center">
-  <img src="screenshots/developerSignup.png" width="45%" height="100%">
-  <img src="screenshots/clientSignup.png" width="45%" height="100%">
-</div>
+<table>
+<tr>
+<td>Developer Signup</td>
+<td>Client Signup</td>
+</tr>
+<tr>
+  <td><img src="screenshots/developerSignup.png" width="100%" height="400px"></td>
+  <td><img src="screenshots/clientSignup.png" width="100%" height="400px"></td>
+</tr>
+</table>
+
+- Developer Dashboard
 
 <div align = "center">
-    <img src="screenshots/developerDashboard.png" width="45%" height="100%">
-    <img src="screenshots/clientDashboard.png" width="45%" height="100%">
+    <img src="screenshots/developerDashboard.png" width="auto" height="100%">
  </div>
 
+- Client Dashboard
+
 <div align = "center">
-    <img src="screenshots/developerProfile.png" width="45%" height="100%">
-    <img src="screenshots/communityPage.png" width="45%" height="100%">
-</div>
+    <img src="screenshots/clientDashboard.png" width="auto" height="100%">
+ </div>
+
+- Developer Profile
+
+<div align = "center">
+    <img src="screenshots/developerProfile.png" width="auto" height="100%">
+ </div>
+
+- Community Page
+
+<div align = "center">
+    <img src="screenshots/communityPage.png" width="auto" height="100%">
+ </div>
