@@ -5,12 +5,16 @@ import { Redirect, useParams, useHistory } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import axios from 'axios';
 import * as Yup from 'yup';
+import { toast } from 'react-toastify';
 
 import { Pill } from '../components/DeveloperSignup.component.jsx';
 import { Divider } from './DeveloperDashboard.js';
 import Backdrop from '../components/Backdrop.component.jsx';
 import Modal from '../components/Modal.component.jsx';
 import TextInput from '../components/CustomInput.component';
+import { FormError } from '../components/DeveloperSignup.component';
+import { api } from '../constants';
+import Loader from '../components/Loader.component.jsx';
 
 export default function Profile() {
   const { user } = useSelector((state) => state.userDetails);
@@ -19,17 +23,45 @@ export default function Profile() {
   const [render, setRender] = useState(false);
   const [userData, setUserData] = useState(null);
   const [show, setShow] = useState(false);
+  const [requestShow, setRequestShow] = useState(false);
   const [posts, setPosts] = useState([]);
   const [fetchedPosts, setFetchedPosts] = useState(false);
+  const [profileNumbers, setProfileNumbers] = useState(null);
+
+  const [error, setError] = useState('');
 
   const isUsername = useParams().username;
   const username = isUsername ? isUsername : user?.username;
 
+  const history = useHistory();
+  const personalProfile = history.location.pathname.includes('/profile');
+
   useEffect(() => {
-    axios.get(`http://localhost:8080/api/users/${username}`).then((res) => {
+    axios
+      .get(
+        `${api}/api/users/count/${username}`,
+
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      )
+      .then((res) => {
+        if (res.data.success) {
+          setProfileNumbers(res.data.profileNumbers);
+        }
+      })
+      .catch((err) => {
+        console.log('error');
+      });
+  }, [username, token]);
+
+  useEffect(() => {
+    axios.get(`${api}/api/users/${username}`).then((res) => {
       if (res.data.success) {
         setUserData(res.data.userData);
-
         setRender(true);
       }
     });
@@ -38,7 +70,7 @@ export default function Profile() {
   useEffect(() => {
     setFetchedPosts(false);
     axios
-      .get(`http://localhost:8080/api/posts/${username}`, {
+      .get(`${api}/api/posts/${username}`, {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -62,46 +94,107 @@ export default function Profile() {
   }, [token, username]);
 
   const handlePost = async (data) => {
+    setError('');
     try {
-      axios
-        .post(
-          'http://localhost:8080/api/posts',
-          {
-            ...data,
+      const res = await axios.post(
+        `${api}/api/posts`,
+        {
+          ...data,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
-          {
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        )
-        .then((res) => {
-          if (res.data.success) {
-            console.log(res.data.post);
-            setPosts((prevState) => setPosts([...prevState, res.data.post]));
-            setShow(false);
-          }
-        });
+        }
+      );
+      if (res.data.success) {
+        console.log(res.data.post);
+        setPosts((prevState) => setPosts([...prevState, res.data.post]));
+        setShow(false);
+        toast.success('Project added successfully');
+      }
     } catch (err) {
-      console.log(err);
       console.log(err.response.data.error);
+      toast.error('Something went wrong');
     }
   };
 
-  if (!render) return <div>Loading...</div>;
+  const handleProject = async (data) => {
+    try {
+      const res = await axios.post(
+        `${api}/api/projects`,
+        {
+          title: data.projectTitle,
+          description: data.projectDescription,
+          developerId: userData._id,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (res.data.success) {
+        console.log(res.data);
+        toast.success(
+          'Project request has been sent. Check your dashboard to track te details'
+        );
+        setRequestShow(false);
+      }
+    } catch (e) {
+      toast.error('Error sending request to developer');
+    }
+    console.log(data);
+  };
+
+  const deletePost = async (postId, i) => {
+    try {
+      const res = await axios.delete(`${api}/api/posts/${postId}`, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (res.data.success) {
+        const newPosts = posts;
+        newPosts.splice(i, 1);
+        console.log(newPosts);
+        setPosts([...newPosts]);
+      }
+    } catch (err) {
+      console.log(err);
+      toast.error('Something went wrong');
+    }
+  };
+
+  if (!render) return <Loader />;
 
   if (!user) {
     return <Redirect to="/dashboard" />;
   }
+
+  console.log(posts);
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Please enter title'),
     description: Yup.string().required('Please enter a description'),
+    repoLink: Yup.string()
+      .required('Please enter a repo link')
+      .url('Please enter a valid url'),
+  });
+  const requestValidationSchema = Yup.object().shape({
+    projectTitle: Yup.string().required('Title is a required field'),
+    projectDescription: Yup.string().required(
+      'Description is a required field'
+    ),
   });
 
   return (
     <Container>
       {show && <Backdrop setShow={setShow} />}
+      {requestShow && <Backdrop setShow={setRequestShow} />}
       {show && (
         <Modal open={show}>
           <Formik
@@ -113,39 +206,48 @@ export default function Profile() {
               repoLink: '',
             }}
             onSubmit={async (data, { setSubmitting, resetForm }) => {
-              try {
-                await handlePost(data);
-                resetForm();
-              } catch (e) {
-                console.log(e);
-              }
+              setSubmitting(true);
+              await handlePost(data);
+              setSubmitting(false);
+              // resetForm();
             }}
           >
             {({ isSubmitting, dirty, isValid }) => (
               <Form>
+                {!!error && (
+                  <FormError>
+                    {error}
+                    <div
+                      onClick={() => setError('')}
+                      style={{ cursor: 'pointer' }}
+                    >
+                      X
+                    </div>
+                  </FormError>
+                )}
                 <TextInput
-                  label="Title:"
+                  label="Name:"
                   name="title"
-                  placeholder="Enter project title"
+                  placeholder="Enter project name"
                 />
 
                 <TextInput
                   label="Description:"
                   name="description"
-                  placeholder="Enter project description"
+                  placeholder="A short description of this project"
                 />
 
+                <TextInput
+                  label="Github repo link :"
+                  name="repoLink"
+                  type="text"
+                  placeholder="Link to Github repository"
+                />
                 <TextInput
                   label="Website url (optional):"
                   name="webUrl"
                   type="text"
-                  placeholder="Enter an username"
-                />
-                <TextInput
-                  label="Github repo link (optional):"
-                  name="repoLink"
-                  type="text"
-                  placeholder="Enter your github's username"
+                  placeholder="Your website URL"
                 />
 
                 <Button
@@ -164,6 +266,52 @@ export default function Profile() {
           </Formik>
         </Modal>
       )}
+      {requestShow && (
+        <Modal open={requestShow} width="600px">
+          <Formik
+            validationSchema={requestValidationSchema}
+            initialValues={{
+              projectTitle: '',
+              projectDescription: '',
+            }}
+            onSubmit={async (data, { setSubmitting, resetForm }) => {
+              await handleProject(data);
+              // resetForm();
+            }}
+          >
+            {({ isSubmitting, dirty, isValid }) => (
+              <Form>
+                <TextInput
+                  label="Name:"
+                  name="projectTitle"
+                  placeholder="Enter the name of app"
+                />
+
+                <TextInput
+                  label="Description:"
+                  name="projectDescription"
+                  placeholder="Tell the developer about your project"
+                />
+                <WarningText>
+                  Please recheck the details before sending request
+                </WarningText>
+
+                <Button
+                  style={{
+                    margin: '0 auto',
+                    borderRadius: '25px',
+                    padding: '9px 15px',
+                  }}
+                  disabled={!dirty || !isValid}
+                  type="submit"
+                >
+                  Send request
+                </Button>
+              </Form>
+            )}
+          </Formik>
+        </Modal>
+      )}
       <TopContainer>
         <AvatarContainer>
           <Avatar image={userData.avatar} />
@@ -172,11 +320,11 @@ export default function Profile() {
         <RightContainer>
           <RightContainerCard>
             <Title>Total </Title>
-            <Amount>{userData.total}</Amount>
+            <Amount>{profileNumbers ? profileNumbers.total : '--'}</Amount>
           </RightContainerCard>
           <RightContainerCard>
             <Title>Completed</Title>
-            <Amount>{userData.completed}</Amount>
+            <Amount>{profileNumbers ? profileNumbers.completed : '--'}</Amount>
           </RightContainerCard>
         </RightContainer>
       </TopContainer>
@@ -219,15 +367,47 @@ export default function Profile() {
           <PostsContainer className="posts__container">
             {fetchedPosts ? (
               <>
-                {posts.map((post) => (
+                {posts.map((post, i) => (
                   <Post key={post._id}>
-                    <PostTitle>{post.title}</PostTitle>
-                    <Description>{post.description}</Description>
+                    <PostTitle>
+                      {post.title}
+
+                      {personalProfile && (
+                        <div onClick={() => deletePost(post._id, i)}>X</div>
+                      )}
+                    </PostTitle>
+                    <Description className="description">
+                      {post.description}
+                    </Description>
+                    <Links>
+                      <div>
+                        <a
+                          href={post.repoLink}
+                          rel="noreferrer"
+                          target="_blank"
+                          style={{ textDecoration: 'none' }}
+                        >
+                          Github &#x1F517;
+                        </a>{' '}
+                      </div>
+                      {!!post.webUrl && (
+                        <div>
+                          <a
+                            style={{ textDecoration: 'none' }}
+                            href={post.webUrl}
+                            rel="noreferrer"
+                            target="_blank"
+                          >
+                            Website &#x1F517;
+                          </a>
+                        </div>
+                      )}
+                    </Links>
                   </Post>
                 ))}
               </>
             ) : (
-              <div>Loading...</div>
+              <Loader />
             )}
           </PostsContainer>
         )}
@@ -252,18 +432,73 @@ export default function Profile() {
           ))}
         </Technologies>
       </TechnologiesContainer>
+
+      {user.userType === 'client' && (
+        <HireDeveloperContainer>
+          <Title style={{ marginTop: '0px' }}>
+            Liked {username}'s profile? Send a request for your project
+          </Title>
+          <div>
+            <Button onClick={() => setRequestShow(true)}>Send request</Button>
+          </div>
+        </HireDeveloperContainer>
+      )}
     </Container>
   );
 }
 
+const WarningText = styled.div`
+  text-align: center;
+  font-size: 11px;
+  margin-bottom: 1rem;
+  color: orange;
+  font-weight: bold;
+`;
+
+const HireDeveloperContainer = styled.div`
+  border: 1px solid #ccc;
+  border-radius: 13px;
+  padding: 1.5rem 0.5rem 1.5rem 0.5rem;
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+`;
+
 const Description = styled.div`
   color: #808080;
   font-size: 14px;
+  height: 100px;
+  overflow-y: scroll;
+
+  &.description::-webkit-scrollbar {
+    height: 6px;
+    width: 2px;
+  }
+  &.description::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 5px white;
+    border-radius: 10px;
+  }
+  &.description::-webkit-scrollbar-thumb {
+    background: black;
+    border-radius: 10px;
+  }
 `;
 const PostTitle = styled.div`
   color: #12609e;
   font-size: 1rem;
   margin-bottom: 5px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  & > div {
+    font-size: 13px;
+    color: red;
+    font-weight: bold;
+    cursor: pointer;
+  }
 `;
 
 const Container = styled.div`
@@ -301,7 +536,7 @@ const PostsContainer = styled.div`
   grid-gap: 1rem;
   margin-top: 1rem;
   padding: 0 5px 0 0;
-  height: 250px;
+  max-height: 250px;
 
   overflow-y: scroll;
 
@@ -317,6 +552,14 @@ const PostsContainer = styled.div`
     background: black;
     border-radius: 10px;
   }
+
+  @media only screen and (max-width: 690px) {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+  @media only screen and (max-width: 540px) {
+    display: flex;
+    flex-wrap: wrap;
+  }
 `;
 
 const PostsWrapper = styled.div`
@@ -331,10 +574,26 @@ const PostsWrapper = styled.div`
 const Post = styled.div`
   border: 1px solid #ccc;
   border-radius: 5px;
-
   padding: 0.5rem;
-  min-height: 150px;
+  max-height: 180px;
+
+  @media only screen and (max-width: 209px) {
+    max-height: 200px;
+  }
 `;
+
+const Links = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  font-size: 11px;
+  margin-top: 15px;
+
+  & > div {
+    margin: 0 3px;
+  }
+`;
+
 const Button = styled.button`
   border: none;
   margin-left: auto;

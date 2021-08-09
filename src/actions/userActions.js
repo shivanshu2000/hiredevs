@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { api } from '../constants';
 
 export const getUser = () => async (dispatch, state) => {
   try {
@@ -20,7 +21,7 @@ export const getUser = () => async (dispatch, state) => {
       },
     };
 
-    const res = await axios.get('http://localhost:8080/api/auth/user', config);
+    const res = await axios.get(`${api}/api/auth/user`, config);
     if (res.data.success) {
       dispatch({ type: 'USER_DETAILS_SUCCESS', payload: res.data.user });
       dispatch({ type: 'APP_INITIALIZED' });

@@ -2,13 +2,17 @@ import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Redirect, useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-
 import axios from 'axios';
 
-import User from '../components/User.component.jsx';
+import { api } from '../constants.js';
+import User, { SingleUser, UserPill } from '../components/User.component.jsx';
+import Loader from '../components/Loader.component.jsx';
 
 const tags = [
   'react',
+  'android',
+  'kotlin',
+  'flutter',
   'vue',
   'angular',
   'node',
@@ -17,6 +21,14 @@ const tags = [
   'go',
   'python',
   'javascript',
+  'machine learning',
+  'data science',
+  'php',
+  '.net',
+  'rust',
+  'gatsby',
+  'next',
+  'nest',
 ];
 
 export default function Explore() {
@@ -25,6 +37,7 @@ export default function Explore() {
   const [usersFetching, setUsersFetching] = useState(false);
 
   const [users, setUsers] = useState([]);
+  const [tag, setTag] = useState('');
 
   const history = useHistory();
   useEffect(() => {
@@ -34,7 +47,7 @@ export default function Explore() {
     setUsersFetching(true);
 
     axios
-      .get(`http://localhost:8080/api/users/?username=${username}`)
+      .get(`${api}/api/users/?username=${username}&tag=${tag}`)
       .then((res) => {
         if (res.data.success) {
           setUsers(res.data.users);
@@ -45,7 +58,7 @@ export default function Explore() {
         console.log(err);
         setUsersFetching(false);
       });
-  }, [history, user, username]);
+  }, [history, user, username, tag]);
 
   const getUser = () => {
     console.log(username);
@@ -60,7 +73,10 @@ export default function Explore() {
       <SearchContainer>
         <SearchBox>
           <Input
-            onChange={(e) => setUsername(e.target.value.trim())}
+            onChange={(e) => {
+              setUsername(e.target.value.trim());
+              setTag('');
+            }}
             value={username}
             placeholder="Search by username"
           />
@@ -76,16 +92,24 @@ export default function Explore() {
       <Wrapper>
         <UsersContainer>
           {usersFetching ? (
-            <div>Loading...</div>
+            <Loader />
           ) : (
             <>
               {users.map((user) => (
-                <User
-                  key={user._id}
-                  username={user.username}
-                  technologies={user.technologies}
-                  image={user.avatar}
-                />
+                <SingleUser key={user._id}>
+                  <User
+                    key={user._id}
+                    username={user.username}
+                    technologies={user.technologies}
+                    image={user.avatar}
+                  />
+                  <div>
+                    {' '}
+                    {user.technologies.slice(0, 3).map((t, i) => (
+                      <UserPill key={i}>{t}</UserPill>
+                    ))}
+                  </div>
+                </SingleUser>
               ))}
             </>
           )}
@@ -95,7 +119,15 @@ export default function Explore() {
           <hr />
           <div style={{ marginTop: '7px' }}>
             {tags.map((tag, i) => (
-              <Tag key={i}>#{tag}</Tag>
+              <Tag
+                onClick={() => {
+                  setTag(tag);
+                  setUsername('');
+                }}
+                key={i}
+              >
+                #{tag}
+              </Tag>
             ))}
           </div>
         </TagsContainer>

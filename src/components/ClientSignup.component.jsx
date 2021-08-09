@@ -7,6 +7,7 @@ import { FormError } from './DeveloperSignup.component.jsx';
 
 import TextInput from '../components/CustomInput.component';
 import { Button } from './Signin.component';
+import { api } from '../constants';
 
 export default function Signup({ setShowVerification }) {
   const [error, setError] = useState('');
@@ -18,21 +19,26 @@ export default function Signup({ setShowVerification }) {
     ),
     email: Yup.string().required('Please enter email'),
     password: Yup.string().required('Please enter a password'),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref('password'), null],
-      "Passwords doesn't  match"
+    confirmPassword: Yup.string().test(
+      'passwords-match',
+      'Passwords must match',
+      function (value) {
+        return this.parent.password === value;
+      }
     ),
   });
 
   const handleSignup = async (data) => {
+    console.log('clicked');
     try {
       dispatch({ type: 'USER_SIGNUP_REQUEST' });
-      const res = await axios.post('http://localhost:8080/api/auth/signup', {
+      const res = await axios.post(`${api}/api/auth/signup`, {
         ...data,
         userType: 'client',
       });
 
       if (res.data.success) {
+        console.log(res.data.success);
         dispatch({
           type: 'USER_SIGNUP_SUCCESS',
         });
@@ -61,9 +67,10 @@ export default function Signup({ setShowVerification }) {
         username: '',
       }}
       onSubmit={async (data, { setSubmitting, resetForm }) => {
+        setSubmitting(true);
         await handleSignup(data);
+        setSubmitting(false);
         // resetForm();
-        console.log(data);
       }}
     >
       {({ isSubmitting, dirty, isValid }) => (
@@ -103,9 +110,7 @@ export default function Signup({ setShowVerification }) {
             placeholder="Enter your password"
           />
 
-          <Button disabled={!dirty || !isValid} type="submit">
-            Sign up
-          </Button>
+          <Button type="submit">Sign up</Button>
         </Form>
       )}
     </Formik>

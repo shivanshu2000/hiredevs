@@ -50,3 +50,18 @@ export const userDetailsReducer = (state = { user: null }, action) => {
       return state;
   }
 };
+
+export const userDashboardReducer = (
+  state = { dashboardDetails: null },
+  action
+) => {
+  switch (action.type) {
+    case 'USER_DASHBOARD_DETAILS_SUCCESS':
+      return { dashboardDetails: action.payload };
+
+    case 'USER_DASHBOARD_DETAILS_RESET':
+      return { dashboardDetails: null };
+    default:
+      return state;
+  }
+};

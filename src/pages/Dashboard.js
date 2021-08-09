@@ -7,13 +7,12 @@ import DeveloperDashboard from './DeveloperDashboard.js';
 import { Links } from '../components/Nav.component.jsx';
 
 export default function Dashboard() {
-  const token = useSelector((state) => state.userToken);
   const { user } = useSelector((state) => state.userDetails);
 
   if (!user) return <Redirect to="/" />;
-  console.log(token);
+
   return (
-    <div style={{ marginTop: '2.5rem', padding: '0 1rem' }}>
+    <div style={{ marginTop: '2.5rem', padding: '0 1rem 2.5rem 1rem' }}>
       <Links
         style={{
           background: '#12609e',

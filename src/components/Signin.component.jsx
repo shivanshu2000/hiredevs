@@ -3,12 +3,13 @@ import React, { useState } from 'react';
 import * as Yup from 'yup';
 import axios from 'axios';
 import styled from 'styled-components';
+import { useHistory } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
 
+import { api } from '../constants';
 import TextInput from './CustomInput.component';
 import { Title } from '../pages/Home';
-import { useHistory } from 'react-router-dom';
 import { FormError } from './DeveloperSignup.component';
-import { useDispatch } from 'react-redux';
 
 export default function Signup() {
   const history = useHistory();
@@ -25,7 +26,7 @@ export default function Signup() {
       dispatch({
         type: 'USER_LOGIN_SUCCESS',
       });
-      const res = await axios.post('http://localhost:8080/api/auth/login', {
+      const res = await axios.post(`${api}/api/auth/login`, {
         email: email,
         password: password,
       });

@@ -6,6 +6,7 @@ import thunk from 'redux-thunk';
 
 import { composeWithDevTools } from 'redux-devtools-extension';
 import {
+  userDashboardReducer,
   userDetailsReducer,
   userLoginReducer,
   userSignupReducer,
@@ -19,6 +20,7 @@ const reducer = combineReducers({
   userLogin: userLoginReducer,
   userSignup: userSignupReducer,
   userToken: userTokenReducer,
+  userDashboardDetails: userDashboardReducer,
   async: asyncReducer,
 });
 

@@ -32,7 +32,9 @@ export default function Nav() {
             </Links>
           </div>
           <div>
-            <Links to="/signup">Signup</Links>
+            <Links to="/signup">
+              <LogoutButton>Signup</LogoutButton>
+            </Links>
           </div>
         </Navbar>
       ) : (
@@ -97,8 +99,9 @@ export const Avatar = styled.div`
   margin-right: 7px;
   border-radius: 50%;
   background-size: cover;
-  background-position: center center;
+  background-position: 50% 50%;
   background-repeat: no-repeat;
+  /* image-rendering: crisp-edges; */
 `;
 
 const LogoutButton = styled.button`

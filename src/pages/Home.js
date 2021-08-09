@@ -31,7 +31,6 @@ const HomeContainer = styled.div`
   display: grid;
   grid-template-columns: 3fr 2.5fr;
   grid-gap: 1rem 1rem;
-  /* margin-top: 3.5rem; */
   padding: 2.5rem 2.5rem 2.5rem 1rem;
   min-height: 100vh;
   background-color: #2d2d3050;

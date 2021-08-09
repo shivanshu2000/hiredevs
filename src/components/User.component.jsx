@@ -5,12 +5,11 @@ import styled from 'styled-components';
 
 import { Avatar } from '../components/Nav.component.jsx';
 
-export default function User({ username: name, image, technologies }) {
+export default function User({ username: name, image }) {
   const [username] = useState(name);
   const { user } = useSelector((state) => state.userDetails);
 
   const history = useHistory();
-  console.log(useHistory());
   const navigateToUser = () => {
     console.log(username);
     if (user.username === username) {
@@ -22,24 +21,18 @@ export default function User({ username: name, image, technologies }) {
   };
 
   return (
-    <SingleUser style={{ cursor: 'pointer' }} onClick={navigateToUser}>
-      <LeftPart>
+    <>
+      <LeftPart style={{ cursor: 'pointer' }} onClick={navigateToUser}>
         <Avatar width={15} height={15} image={image} />
         <div style={{ fontSize: '11px' }} className="user__name">
           {username}
         </div>
       </LeftPart>
-      <div>
-        {' '}
-        {technologies.slice(0, 3).map((t, i) => (
-          <Pill key={i}>{t}</Pill>
-        ))}
-      </div>
-    </SingleUser>
+    </>
   );
 }
 
-const SingleUser = styled.div`
+export const SingleUser = styled.div`
   display: flex;
   justify-content: space-between;
   border: 1px solid #ccc;
@@ -52,7 +45,7 @@ const SingleUser = styled.div`
   }
 `;
 
-const Pill = styled.div`
+export const UserPill = styled.div`
   display: inline-block;
   text-align: center;
   font-size: 13px;

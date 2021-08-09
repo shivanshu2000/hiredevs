@@ -7,6 +7,7 @@ import { useDispatch } from 'react-redux';
 import { Button } from '../components/Signin.component';
 import { TechnologiesInput } from '../components/DeveloperSignup.component.jsx';
 import { FormError } from '../components/DeveloperSignup.component.jsx';
+import { api } from '../constants';
 
 export default function EnterCode() {
   const [code, setCode] = useState('');
@@ -20,12 +21,9 @@ export default function EnterCode() {
       setError('Please fill the code');
     }
     try {
-      const res = await axios.post(
-        'http://localhost:8080/api/auth/verify-code',
-        {
-          code: code,
-        }
-      );
+      const res = await axios.post(`${api}/api/auth/verify-code`, {
+        code: code,
+      });
       console.log(res.data.success);
       if (res.data.success) {
         console.log(res.data.success);

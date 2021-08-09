@@ -3,22 +3,27 @@ import { Route, Switch } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 import Home from './pages/Home';
+
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.min.css';
 import Profile from './pages/Profile';
 import Signup from './pages/Signup';
-import User from './pages/User';
 import Dashboard from './pages/Dashboard';
 import Explore from './pages/Explore';
 
 import Nav from './components/Nav.component.jsx';
+import Loader from './components/Loader.component';
+import NotFoundPage from './pages/NotFoundPage';
 
 function App() {
   const { initialized } = useSelector((state) => state.async);
 
   if (!initialized) {
-    return <div>Loading...</div>;
+    return <Loader />;
   }
   return (
     <div className="App">
+      <ToastContainer position="top-right" hideProgressBar />
       <Nav />
       <Switch>
         <Route path="/" exact component={Home} />
@@ -27,6 +32,7 @@ function App() {
         <Route path="/dashboard" component={Dashboard} />
         <Route path="/explore" component={Explore} />
         <Route path="/user/:username" component={Profile} />
+        <Route path="*" exact={true} component={NotFoundPage} />
       </Switch>
     </div>
   );

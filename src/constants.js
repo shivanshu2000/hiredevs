@@ -1,1 +1,1 @@
-export const localApi = 'http://localhost:8080/api';
+export const api = 'https://apihiredevs.herokuapp.com';

@@ -3,14 +3,11 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import axios from 'axios';
 import * as Yup from 'yup';
-import { useHistory } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 
-import TextInput, {
-  Error,
-  InputContainer,
-} from '../components/CustomInput.component';
+import TextInput, { InputContainer } from '../components/CustomInput.component';
 import { Button } from './Signin.component';
+import { api } from '../constants';
 
 export default function Signup({ setShowVerification }) {
   const [technologies, setTechnologies] = useState([]);
@@ -19,8 +16,6 @@ export default function Signup({ setShowVerification }) {
   const [isFocused, setIsFocused] = useState(false);
   const [validGithubUsername, setValidGithubUsername] = useState(true);
   const dispatch = useDispatch();
-
-  const history = useHistory();
 
   const handleAddTechnology = (e) => {
     if (e.key === 'Enter' && !!technology.trim()) {
@@ -46,7 +41,7 @@ export default function Signup({ setShowVerification }) {
         `https://api.github.com/users/${data.githubUsername}`
       );
       console.log(res.data);
-      const resA = await axios.post('http://localhost:8080/api/auth/signup', {
+      const resA = await axios.post(`${api}/api/auth/signup`, {
         ...data,
         avatar: res.data.avatar_url,
         githubUsername: data.githubUsername,
@@ -79,9 +74,12 @@ export default function Signup({ setShowVerification }) {
   const validationSchema = Yup.object().shape({
     email: Yup.string().required('Please enter email'),
     password: Yup.string().required('Please enter a password'),
-    confirmPassword: Yup.string().oneOf(
-      [Yup.ref('password'), null],
-      "Passwords doesn't  match"
+    confirmPassword: Yup.string().test(
+      'passwords-match',
+      'Passwords must match',
+      function (value) {
+        return this.parent.password === value;
+      }
     ),
     username: Yup.string().required('Username is a required field'),
     githubUsername: Yup.string().required(
@@ -192,9 +190,7 @@ export default function Signup({ setShowVerification }) {
               </Pill>
             ))}
           </PillsContainer>
-          <Button disabled={!dirty || !isValid} type="submit">
-            Sign up
-          </Button>
+          <Button type="submit">Sign up</Button>
         </Form>
       )}
     </Formik>
