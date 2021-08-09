@@ -9,7 +9,7 @@ import TextInput from '../components/CustomInput.component';
 import { Button } from './Signin.component';
 import { api } from '../constants';
 
-export default function Signup({ setShowVerification }) {
+export default function Signup({ setShowOnSubmit, showOnSubmit }) {
   const [error, setError] = useState('');
   const dispatch = useDispatch();
 
@@ -29,31 +29,36 @@ export default function Signup({ setShowVerification }) {
   });
 
   const handleSignup = async (data) => {
-    console.log('clicked');
+    setShowOnSubmit({
+      ...showOnSubmit,
+      isLoading: true,
+      showVerification: false,
+    });
+
     try {
-      dispatch({ type: 'USER_SIGNUP_REQUEST' });
       const res = await axios.post(`${api}/api/auth/signup`, {
         ...data,
         userType: 'client',
       });
 
       if (res.data.success) {
-        console.log(res.data.success);
-        dispatch({
-          type: 'USER_SIGNUP_SUCCESS',
-        });
         dispatch({ type: 'SET_USER_TOKEN', payload: res.data.token });
         JSON.stringify(localStorage.setItem('token', res.data.token));
 
-        setShowVerification(true);
+        setShowOnSubmit({
+          ...showOnSubmit,
+          isLoading: false,
+          showVerification: true,
+        });
       }
     } catch (e) {
       setError(e.response.data.error);
-      dispatch({
-        type: 'USER_SIGNUP_FAIL',
-        payload: e.response.data.error,
+      console.log(e.message, 'error here');
+      setShowOnSubmit({
+        ...showOnSubmit,
+        isLoading: false,
+        showVerification: false,
       });
-      console.log(e.response);
     }
   };
 
@@ -109,8 +114,8 @@ export default function Signup({ setShowVerification }) {
             type="password"
             placeholder="Enter your password"
           />
-
-          <Button type="submit">Sign up</Button>
+          {showOnSubmit.isLoading && <Button>Signing up...</Button>}
+          {!showOnSubmit.isLoading && <Button type="submit">Sign up</Button>}
         </Form>
       )}
     </Formik>

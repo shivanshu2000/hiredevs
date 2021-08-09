@@ -10,12 +10,16 @@ import { Redirect } from 'react-router-dom';
 
 export default function Signup() {
   const [isDeveloper, setIsDeveloper] = useState(true);
-  const [showVerification, setShowVerification] = useState(false);
+
+  const [showOnSubmit, setShowOnSubmit] = useState({
+    showVerification: false,
+    isLoading: false,
+  });
   const { user } = useSelector((state) => state.userDetails);
 
   if (!!user) return <Redirect to="/dashboard" />;
 
-  if (showVerification) {
+  if (showOnSubmit.showVerification) {
     return <EnterCode />;
   }
 
@@ -36,10 +40,19 @@ export default function Signup() {
             Client
           </SingleSwitch>
         </Switches>
+
         {isDeveloper ? (
-          <DeveloperSignup setShowVerification={setShowVerification} />
+          <DeveloperSignup
+            // setIsLoading={setIsLoading}
+            setShowOnSubmit={setShowOnSubmit}
+            showOnSubmit={showOnSubmit}
+          />
         ) : (
-          <ClientSignup setShowVerification={setShowVerification} />
+          <ClientSignup
+            // setIsLoading={setIsLoading}
+            setShowOnSubmit={setShowOnSubmit}
+            showOnSubmit={showOnSubmit}
+          />
         )}
       </FormContainer>
     </Container>

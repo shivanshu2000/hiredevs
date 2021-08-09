@@ -6,7 +6,6 @@ export const getUser = () => async (dispatch, state) => {
     dispatch({ type: 'USER_DETAILS_RESET' });
     dispatch({ type: 'APP_INIALIZATION_START' });
     const { token } = state().userToken;
-    console.log(state().userToken);
 
     if (!token) {
       dispatch({ type: 'USER_LOGOUT' });

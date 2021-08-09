@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { Redirect, useParams, useHistory } from 'react-router-dom';
+import { Redirect, useParams, useHistory, NavLink } from 'react-router-dom';
 import { Form, Formik } from 'formik';
 import axios from 'axios';
 import * as Yup from 'yup';
@@ -37,6 +37,8 @@ export default function Profile() {
   const personalProfile = history.location.pathname.includes('/profile');
 
   useEffect(() => {
+    if (!username) return;
+    console.log(username, !username);
     axios
       .get(
         `${api}/api/users/count/${username}`,
@@ -62,6 +64,7 @@ export default function Profile() {
   }, [username, history, token]);
 
   useEffect(() => {
+    if (!username) return;
     axios.get(`${api}/api/users/${username}`).then((res) => {
       if (res.data.success) {
         setUserData(res.data.userData);
@@ -71,6 +74,7 @@ export default function Profile() {
   }, [username]);
 
   useEffect(() => {
+    if (!username) return;
     setFetchedPosts(false);
     axios
       .get(`${api}/api/posts/${username}`, {
@@ -83,7 +87,6 @@ export default function Profile() {
         if (res.data.success) {
           setPosts(res.data.posts);
           setFetchedPosts(true);
-          console.log(res.data.posts);
         }
       })
       .catch((err) => {
@@ -179,7 +182,6 @@ export default function Profile() {
     return <Redirect to="/dashboard" />;
   }
 
-  console.log(posts);
   const validationSchema = Yup.object().shape({
     title: Yup.string().required('Please enter title'),
     description: Yup.string().required('Please enter a description'),
@@ -196,6 +198,27 @@ export default function Profile() {
 
   return (
     <Container>
+      {personalProfile && (
+        <div
+          style={{
+            padding: '5px 9px',
+            marginBottom: '1.5rem',
+          }}
+        >
+          <NavLink
+            style={{
+              textDecoration: 'none',
+              padding: '9px 9px',
+              backgroundColor: '#12609e',
+              color: 'white',
+              borderRadius: '7px',
+            }}
+            to="/dashboard"
+          >
+            Go to dashboard
+          </NavLink>
+        </div>
+      )}
       {show && <Backdrop setShow={setShow} />}
       {requestShow && <Backdrop setShow={setRequestShow} />}
       {show && (
@@ -505,9 +528,25 @@ const PostTitle = styled.div`
 `;
 
 const Container = styled.div`
-  margin-top: 2.5rem;
+  margin-top: 2rem;
   padding: 1rem;
 `;
+
+const TopContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr 9fr;
+  grid-gap: 1rem 1rem;
+
+  @media only screen and (max-width: 610px) {
+    display: flex;
+    justify-content: space-around;
+  }
+
+  @media only screen and (max-width: 445px) {
+    flex-direction: column;
+  }
+`;
+
 const Technologies = styled.div`
   margin: 0 auto;
   max-width: 600px;
@@ -548,7 +587,7 @@ const PostsContainer = styled.div`
     width: 2px;
   }
   &.posts__container::-webkit-scrollbar-track {
-    box-shadow: inset 0 0 5px grey;
+    box-shadow: inset 0 0 5px white;
     border-radius: 10px;
   }
   &.posts__container::-webkit-scrollbar-thumb {
@@ -671,19 +710,4 @@ const AvatarContainer = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   align-items: center;
-`;
-
-const TopContainer = styled.div`
-  display: grid;
-  grid-template-columns: 1fr 9fr;
-  grid-gap: 1rem 1rem;
-
-  @media only screen and (max-width: 610px) {
-    display: flex;
-    justify-content: space-around;
-  }
-
-  @media only screen and (max-width: 445px) {
-    flex-direction: column;
-  }
 `;

@@ -7,7 +7,7 @@ import axios from 'axios';
 import { api } from '../constants.js';
 import User, { SingleUser, UserPill } from '../components/User.component.jsx';
 import Loader from '../components/Loader.component.jsx';
-
+import { ModalDescription } from './DeveloperDashboard';
 const tags = [
   'react',
   'android',
@@ -22,7 +22,7 @@ const tags = [
   'python',
   'javascript',
   'machine learning',
-  'data science',
+  'data',
   'php',
   '.net',
   'rust',
@@ -95,6 +95,9 @@ export default function Explore() {
             <Loader />
           ) : (
             <>
+              {users?.length === 0 && (
+                <ModalDescription>No user found</ModalDescription>
+              )}
               {users.map((user) => (
                 <SingleUser key={user._id}>
                   <User

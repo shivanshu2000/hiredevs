@@ -23,9 +23,6 @@ export default function Signup() {
 
   const handleLogin = async ({ email, password }) => {
     try {
-      dispatch({
-        type: 'USER_LOGIN_SUCCESS',
-      });
       const res = await axios.post(`${api}/api/auth/login`, {
         email: email,
         password: password,

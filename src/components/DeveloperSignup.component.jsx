@@ -9,7 +9,7 @@ import TextInput, { InputContainer } from '../components/CustomInput.component';
 import { Button } from './Signin.component';
 import { api } from '../constants';
 
-export default function Signup({ setShowVerification }) {
+export default function Signup({ setShowOnSubmit, showOnSubmit }) {
   const [technologies, setTechnologies] = useState([]);
   const [technology, setTechnology] = useState('');
   const [error, setError] = useState('');
@@ -34,13 +34,19 @@ export default function Signup({ setShowVerification }) {
   };
 
   const handleSignup = async (data) => {
+    setShowOnSubmit({
+      ...showOnSubmit,
+      isLoading: true,
+      showVerification: false,
+    });
+
     try {
       dispatch({ type: 'USER_SIGNUP_REQUEST' });
       setValidGithubUsername(true);
       const res = await axios.get(
         `https://api.github.com/users/${data.githubUsername}`
       );
-      console.log(res.data);
+
       const resA = await axios.post(`${api}/api/auth/signup`, {
         ...data,
         avatar: res.data.avatar_url,
@@ -48,25 +54,29 @@ export default function Signup({ setShowVerification }) {
         userType: 'developer',
       });
 
-      console.log(resA.data);
       if (resA.data.success) {
-        dispatch({
-          type: 'USER_SIGNUP_SUCCESS',
+        setShowOnSubmit({
+          ...showOnSubmit,
+          isLoading: false,
+          showVerification: true,
         });
-
-        setShowVerification(true);
       }
     } catch (e) {
-      console.log(e.response.data.error);
       setError(e.response.data.error);
-      dispatch({
-        type: 'USER_SIGNUP_FAIL',
-      });
       if (e.response && e.response.data.message === 'Not Found') {
         setValidGithubUsername(false);
         console.log(e.response.data);
+        setShowOnSubmit({
+          ...showOnSubmit,
+          isLoading: false,
+          showVerification: false,
+        });
       } else {
-        console.log(e.response);
+        setShowOnSubmit({
+          ...showOnSubmit,
+          isLoading: false,
+          showVerification: false,
+        });
       }
     }
   };
@@ -190,7 +200,8 @@ export default function Signup({ setShowVerification }) {
               </Pill>
             ))}
           </PillsContainer>
-          <Button type="submit">Sign up</Button>
+          {showOnSubmit.isLoading && <Button>Signing up...</Button>}
+          {!showOnSubmit.isLoading && <Button type="submit">Sign up</Button>}
         </Form>
       )}
     </Formik>
